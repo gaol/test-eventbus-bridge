@@ -1,0 +1,16 @@
+{
+  "port": 7000,
+  "bridge-options": {
+    "inboundPermitted": [
+      {
+        "addressRegex": "*"
+      }
+    ],
+    "outboundPermitted": [
+      {
+        "addressRegex": "*"
+      }
+    ]
+  },
+  "server-options": {}
+}
