@@ -18,7 +18,8 @@ process = Popen(['java', '-jar' , "target/test-ebridge-1.0.0-SNAPSHOT-fat.jar", 
 
 * It contains some builtin handlers with predefined handlers:
 
-| Address | Handler |
-| `echo` | Handler echos back any message sent to bridge. Body is `JsonObject` |
-| `time` | Handler sends back current time in the server. Body is `JsonObject`, like:  `{"time": "xxx"}` |
-| `list` | Handler sends back information about list of registered handlers. Body is `JsonArray`. |
+Address | Handle
+------------ | -------------
+`echo` | Handler echos back any message sent to bridge. Body is `JsonObject`
+`time` | Handler sends back current time in the server. Body is `JsonObject`, like:  `{"time": "xxx"}`
+`list` | Handler sends back information about list of registered handlers. Body is `JsonArray`
