@@ -35,8 +35,8 @@ class EventBusBridgeStarter:
         self.started = False
         self.debug = debug
         self.jar_file = "%s/test-ebridge-%s-fat.jar" % (os.getcwd(), jar_version)
-        self.jar_url = "https://github.com/gaol/test-eventbus-bridge/archive/refs/tags/%s-fat.jar" % jar_version
-    
+        self.jar_url = "https://github.com/gaol/test-eventbus-bridge/releases/download/%s/test-ebridge-%s-fat.jar" % (jar_version, jar_version)
+
     def start(self):
         try:
             if not os.path.exists(self.jar_file):
