@@ -19,7 +19,7 @@ class EventBusBridgeStarter:
     An Vertx EventBus Bridge Starter, used to start a bridge server for integration testing
     """
     
-    def __init__(self, jar_version='1.0.0', port=7000, wait_for='Welcome to use EventBus Starter', debug=False):
+    def __init__(self, jar_version='1.0.0', port=7000, wait_for='Welcome to use EventBus Starter', debug=False, conf=None):
         """
         construct me
 
@@ -34,6 +34,7 @@ class EventBusBridgeStarter:
         self.process = None
         self.started = False
         self.debug = debug
+        self.conf = conf
         self.jar_file = "%s/test-ebridge-%s-fat.jar" % (os.getcwd(), jar_version)
         self.jar_url = "https://github.com/gaol/test-eventbus-bridge/releases/download/%s/test-ebridge-%s-fat.jar" % (jar_version, jar_version)
 
@@ -46,7 +47,10 @@ class EventBusBridgeStarter:
                 with open(self.jar_file, 'wb') as f:
                     f.write(req.content)
                     f.close()
-            self.process = Popen(['java', '-jar', self.jar_file], stderr=PIPE)
+            if self.conf is None:
+                self.process = Popen(['java', '-jar', self.jar_file], stderr=PIPE)
+            elif type(self.conf) is dict or os.path.exists(self.conf):
+                self.process = Popen(['java', '-jar', '-conf', self.conf, self.jar_file], stderr=PIPE)
             t = Thread(target=self._handle_output)
             t.daemon = True  # thread dies with the program
             t.start()
