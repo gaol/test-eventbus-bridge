@@ -22,6 +22,12 @@
     <main.verticle>io.github.gaol.vertx.test.ebridge.test_ebridge.MainVerticle</main.verticle>
   </properties>
 
+  <scm>
+    <connection>scm:git:git@github.com:gaol/test-eventbus-bridge.git</connection>
+    <developerConnection>scm:git:git@github.com:gaol/test-eventbus-bridge.git</developerConnection>
+    <url>https://github.com/gaol/test-eventbus-bridge</url>
+  </scm>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
