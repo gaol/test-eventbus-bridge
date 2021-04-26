@@ -8,7 +8,7 @@ with open(rdm_file, encoding='utf-8') as f:
 
 setuptools.setup(
     name='vertx-eventbus-bridge-starter',
-    version='1.0.0',
+    version='1.0.1',
     packages=['testeventbus'],
     author='Lin Gao',
     author_email='aoingl@gmail.com',
