@@ -34,6 +34,7 @@ public class MainVerticle extends AbstractVerticle {
       .onComplete(v -> {
         if (v.succeeded()) {
           log.info("TCP EventBus Bridge started on port: " + port);
+          log.info(config().getString("welcome.message", "Welcome to use EventBus Starter"));
           startPromise.complete();
         } else {
           log.error("Failed to start the TCP EventBus Bridge", v.cause());
