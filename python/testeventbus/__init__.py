@@ -10,8 +10,11 @@ import os
 import time
 from subprocess import Popen, PIPE
 from threading import Thread
-
 import requests
+
+STARTER_FAIL_INDICATOR = "Failed to start the TCP EventBus Bridge"
+DEFAULT_WAIT_FOR = "Welcome to use EventBus Starter"
+JAR_URL_TEMPLATE = "https://github.com/gaol/test-eventbus-bridge/releases/download/%s/test-ebridge-%s-fat.jar"
 
 
 class EventBusBridgeStarter:
@@ -19,7 +22,7 @@ class EventBusBridgeStarter:
     An Vertx EventBus Bridge Starter, used to start a bridge server for integration testing
     """
     
-    def __init__(self, jar_version='1.0.0', port=7000, wait_for='Welcome to use EventBus Starter', debug=False, conf=None):
+    def __init__(self, jar_version='1.0.1', port=7000, wait_for=DEFAULT_WAIT_FOR, debug=False, conf=None):
         """
         construct me
 
@@ -36,7 +39,8 @@ class EventBusBridgeStarter:
         self.debug = debug
         self.conf = conf
         self.jar_file = "%s/test-ebridge-%s-fat.jar" % (os.getcwd(), jar_version)
-        self.jar_url = "https://github.com/gaol/test-eventbus-bridge/releases/download/%s/test-ebridge-%s-fat.jar" % (jar_version, jar_version)
+        self.jar_url = JAR_URL_TEMPLATE % (jar_version, jar_version)
+        self.failed = False
 
     def start(self):
         try:
@@ -67,14 +71,17 @@ class EventBusBridgeStarter:
           time_step(float): the time step in secs in which the state should be regularly checked
 
         :raise:
-           :Exception: wait timed out
+           :exception: wait timed out
+           :exception: if bridge failed to start
         """
         time_left = time_out
-        while not self.started and time_left > 0:
+        while not self.started and not self.failed and time_left > 0:
             time.sleep(time_step)
             time_left = time_left - time_step
         if time_left <= 0:
             raise Exception("wait for start time_out after %.3f secs" % time_out)
+        if self.failed:
+            raise Exception("failed to start vertx eventbus bridge")
         if self.debug:
             print("wait for start successful after %.3f secs" % (time_out - time_left))
     
@@ -84,9 +91,13 @@ class EventBusBridgeStarter:
         for bline in iter(out.readline, b''):
             line = bline.decode('utf8')
             if self.debug:
-                print("java: %s" % line)
+                print("Java: %s" % line)
             if self.wait_for in line:
                 self.started = True
+            if STARTER_FAIL_INDICATOR in line:
+                self.failed = True
+                self.stop()
+                break
         out.close()
     
     def stop(self):

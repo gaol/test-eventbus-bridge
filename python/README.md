@@ -3,6 +3,9 @@ A vertx eventbus bridge that is used for testing
 
 ## How to used it
 
+Install using pip:
+
+> pip install vertx-eventbus-bridge-starter
 
 ```python
 import unittest
@@ -37,3 +40,9 @@ class EventBusClientTests(unittest.TestCase):
         ebus.wait()
         ebus.send("echo", body={"hello": "world"})
 ```
+
+## TODO
+
+* use a temporary directory to download the jar
+* check MD5 of the jar
+* 
