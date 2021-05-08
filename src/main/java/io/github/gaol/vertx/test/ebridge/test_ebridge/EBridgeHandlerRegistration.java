@@ -91,8 +91,18 @@ class EBridgeHandlerRegistration {
 
     @Override
     Handler<Message<JsonObject>> createHandler() {
-      return m -> log.info("Got Message to Consume: " + m.body().encodePrettily());
+      return m -> log.info("Got Message to Consume: \n" + messageInfo(m));
     }
+  }
+
+  private static String messageInfo(Message<JsonObject> message) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("{'headers': ").append(message.headers().toString());
+    if (message.body() != null) {
+      sb.append(", 'body': ").append(message.body().encodePrettily());
+    }
+    sb.append("\n}");
+    return sb.toString();
   }
 
   private static class EchoHandler extends EBridgeHandler<JsonObject> {
@@ -103,7 +113,7 @@ class EBridgeHandlerRegistration {
     @Override
     Handler<Message<JsonObject>> createHandler() {
       return m -> {
-        log.info("Got Message to Echo: " + m.body().encodePrettily());
+        log.info("Got Message to Echo: \n" + messageInfo(m));
         m.reply(m.body());
       };
     }
@@ -117,6 +127,7 @@ class EBridgeHandlerRegistration {
     @Override
     Handler<Message<JsonObject>> createHandler() {
       return m -> {
+        log.info("Got Message from client: \n" + messageInfo(m));
         log.info("Returning time back to client");
         m.reply(new JsonObject().put("time", Instant.now()));
       };
@@ -133,6 +144,7 @@ class EBridgeHandlerRegistration {
       return m -> {
         JsonArray list = new JsonArray();
         handlersMap.forEach((k, v) -> list.add(new JsonObject().put("address", k).put("handler", v.toJson())));
+        log.info("Got Message from client: \n" + messageInfo(m));
         log.info("Returning list of handlers: " + list.encodePrettily());
         m.reply(list);
       };
