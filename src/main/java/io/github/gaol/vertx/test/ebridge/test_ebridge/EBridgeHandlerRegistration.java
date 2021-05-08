@@ -91,7 +91,7 @@ class EBridgeHandlerRegistration {
 
     @Override
     Handler<Message<JsonObject>> createHandler() {
-      return m -> log.info("Message got consumed: " + m.body().encodePrettily());
+      return m -> log.info("Got Message to Consume: " + m.body().encodePrettily());
     }
   }
 
