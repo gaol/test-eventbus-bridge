@@ -1,14 +1,14 @@
 {
   "port": 7000,
   "bridge-options": {
-    "inboundPermitted": [
+    "inboundPermitteds": [
       {
-        "addressRegex": "*"
+        "addressRegex": "[\\w]*"
       }
     ],
-    "outboundPermitted": [
+    "outboundPermitteds": [
       {
-        "addressRegex": "*"
+        "addressRegex": "[\\w]*"
       }
     ]
   },
