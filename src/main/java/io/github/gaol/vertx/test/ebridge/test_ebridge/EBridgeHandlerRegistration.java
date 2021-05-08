@@ -70,6 +70,7 @@ class EBridgeHandlerRegistration {
   }
 
   private void loadBuiltinHandlers() {
+    handlersMap.putIfAbsent("consume", new ConsumeHandler());
     handlersMap.putIfAbsent("echo", new EchoHandler());
     handlersMap.putIfAbsent("time", new TimeHandler());
     handlersMap.putIfAbsent("list", new ListHandler());
@@ -83,6 +84,17 @@ class EBridgeHandlerRegistration {
     handlersMap.putIfAbsent(address, handlerFromClient);
   }
 
+  private static class ConsumeHandler extends EBridgeHandler<JsonObject> {
+    private ConsumeHandler() {
+      super("consume", TYPE.BUILTIN);
+    }
+
+    @Override
+    Handler<Message<JsonObject>> createHandler() {
+      return m -> log.info("Message got consumed: " + m.body().encodePrettily());
+    }
+  }
+
   private static class EchoHandler extends EBridgeHandler<JsonObject> {
     private EchoHandler() {
       super("Echo", TYPE.BUILTIN);
@@ -90,7 +102,10 @@ class EBridgeHandlerRegistration {
 
     @Override
     Handler<Message<JsonObject>> createHandler() {
-      return m -> m.reply(m.body());
+      return m -> {
+        log.info("Got Message to Echo: " + m.body().encodePrettily());
+        m.reply(m.body());
+      };
     }
   }
 
@@ -101,7 +116,10 @@ class EBridgeHandlerRegistration {
 
     @Override
     Handler<Message<JsonObject>> createHandler() {
-      return m -> m.reply(new JsonObject().put("time", Instant.now()));
+      return m -> {
+        log.info("Returning time back to client");
+        m.reply(new JsonObject().put("time", Instant.now()));
+      };
     }
   }
 
@@ -115,6 +133,7 @@ class EBridgeHandlerRegistration {
       return m -> {
         JsonArray list = new JsonArray();
         handlersMap.forEach((k, v) -> list.add(new JsonObject().put("address", k).put("handler", v.toJson())));
+        log.info("Returning list of handlers: " + list.encodePrettily());
         m.reply(list);
       };
     }
