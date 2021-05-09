@@ -21,7 +21,7 @@ public class MainVerticle extends AbstractVerticle {
 
   @Override
   public void start(Promise<Void> startPromise) throws Exception {
-    log.debug("Start deploying MainVerticle");
+    log.info("Start deploying MainVerticle using config: " + config().encodePrettily());
     EBridgeHandlerRegistration.getInstance()
       .loadInitialConsumers(config().getJsonArray("handlers"))
       .handlerMap().forEach((address, handler) -> vertx.eventBus().consumer(address, handler.createHandler()));
@@ -60,6 +60,7 @@ public class MainVerticle extends AbstractVerticle {
       };
       // only register the Handler meta, the real handler has been registered by the bridge
       EBridgeHandlerRegistration.getInstance().register(address, handlerFromClient);
+      log.info("Handler Registered with message: " + rawMessage.encodePrettily());
       bridgeEvent.complete(true);
     } else {
       bridgeEvent.complete(true);

@@ -3,12 +3,12 @@
   "bridge-options": {
     "inboundPermitteds": [
       {
-        "addressRegex": "[\\w]*"
+        "addressRegex": "[\\w-_ ]*"
       }
     ],
     "outboundPermitteds": [
       {
-        "addressRegex": "[\\w]*"
+        "addressRegex": "[\\w-_ ]*"
       }
     ]
   },
