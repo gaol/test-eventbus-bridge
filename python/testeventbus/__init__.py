@@ -6,15 +6,19 @@
 # This test starter borrows lots from https://github.com/rc-dukes/vertx-eventbus-python, thanks to Wolfgang Fahl
 #
 
+from datetime import datetime
 import os
 import time
 from subprocess import Popen, PIPE
-from threading import Thread
+from threading import Thread, Condition
 import requests
 
 STARTER_FAIL_INDICATOR = "Failed to start the TCP EventBus Bridge"
 DEFAULT_WAIT_FOR = "Welcome to use EventBus Starter"
 JAR_URL_TEMPLATE = "https://github.com/gaol/test-eventbus-bridge/releases/download/%s/test-ebridge-%s-fat.jar"
+
+
+__all__ = ['EventBusBridgeStarter', 'CountDownLatch']
 
 
 class EventBusBridgeStarter:
@@ -104,3 +108,36 @@ class EventBusBridgeStarter:
         if self.started:
             self.process.kill()
             self.started = False
+
+
+class CountDownLatch:
+    """
+    CountDownLatch can be used for async testing
+    """
+    def __init__(self, count=1):
+        self.count = count
+        self.condition = Condition()
+    
+    def awaits(self, timeout=None):
+        try:
+            self.condition.acquire()
+            start = datetime.now()
+            while self.count > 0:
+                self.condition.wait(timeout / 10)  # divides each step by 10
+                if timeout is not None:
+                    spent = (datetime.now() - start).seconds
+                    if spent > timeout:
+                        raise Exception("timeout after waiting for %d seconds!" % spent)
+        finally:
+            self.condition.release()
+    
+    def count_down(self):
+        try:
+            self.condition.acquire()
+            self.count -= 1
+            self.condition.notifyAll()
+        finally:
+            self.condition.release()
+    
+    def get_count(self):
+        return self.count
