@@ -44,8 +44,8 @@ public class MainVerticle extends AbstractVerticle {
   }
 
   private void handleBridgeEvent(BridgeEvent bridgeEvent) {
+    final JsonObject rawMessage = bridgeEvent.getRawMessage();
     if (BridgeEventType.REGISTER == bridgeEvent.type()) {
-      JsonObject rawMessage = bridgeEvent.getRawMessage();
       String address = rawMessage.getString("address");
       JsonObject headers = rawMessage.getValue("headers") != null ? rawMessage.getJsonObject("headers") : new JsonObject();
       String name = headers.getString("name", address);
@@ -61,10 +61,12 @@ public class MainVerticle extends AbstractVerticle {
       // only register the Handler meta, the real handler has been registered by the bridge
       EBridgeHandlerRegistration.getInstance().register(address, handlerFromClient);
       log.info("Handler Registered with message: " + rawMessage.encodePrettily());
-      bridgeEvent.complete(true);
-    } else {
-      bridgeEvent.complete(true);
+    } else if (BridgeEventType.UNREGISTER == bridgeEvent.type()) {
+      String address = rawMessage.getString("address");
+      log.info("Unregister handler with address: " + address);
+      EBridgeHandlerRegistration.getInstance().unregister(address);
     }
+    bridgeEvent.complete(true);
   }
 
   @Override

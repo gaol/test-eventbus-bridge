@@ -17,6 +17,7 @@
 package io.github.gaol.vertx.test.ebridge.test_ebridge;
 
 import io.vertx.core.Handler;
+import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.impl.logging.Logger;
 import io.vertx.core.impl.logging.LoggerFactory;
@@ -84,6 +85,10 @@ class EBridgeHandlerRegistration {
     handlersMap.putIfAbsent(address, handlerFromClient);
   }
 
+  public void unregister(String address) {
+    handlersMap.remove(address);
+  }
+
   private static class ConsumeHandler extends EBridgeHandler<JsonObject> {
     private ConsumeHandler() {
       super("consume", TYPE.BUILTIN);
@@ -95,11 +100,11 @@ class EBridgeHandlerRegistration {
     }
   }
 
-  private static String messageInfo(Message<JsonObject> message) {
+  private static <T> String messageInfo(Message<T> message) {
     StringBuilder sb = new StringBuilder();
     sb.append("{'headers': ").append(message.headers().toString());
     if (message.body() != null) {
-      sb.append(", 'body': ").append(message.body().encodePrettily());
+      sb.append(", 'body': ").append(message.body().toString());
     }
     sb.append("\n}");
     return sb.toString();
@@ -114,7 +119,9 @@ class EBridgeHandlerRegistration {
     Handler<Message<JsonObject>> createHandler() {
       return m -> {
         log.info("Got Message to Echo: \n" + messageInfo(m));
-        m.reply(m.body());
+        DeliveryOptions dops = new DeliveryOptions();
+        m.headers().forEach((e) -> dops.addHeader(e.getKey(), e.getValue()));
+        m.reply(m.body(), dops);
       };
     }
   }
@@ -129,7 +136,9 @@ class EBridgeHandlerRegistration {
       return m -> {
         log.info("Got Message from client: \n" + messageInfo(m));
         log.info("Returning time back to client");
-        m.reply(new JsonObject().put("time", Instant.now()));
+        DeliveryOptions dops = new DeliveryOptions();
+        m.headers().forEach((e) -> dops.addHeader(e.getKey(), e.getValue()));
+        m.reply(new JsonObject().put("time", Instant.now()), dops);
       };
     }
   }
@@ -146,7 +155,9 @@ class EBridgeHandlerRegistration {
         handlersMap.forEach((k, v) -> list.add(new JsonObject().put("address", k).put("handler", v.toJson())));
         log.info("Got Message from client: \n" + messageInfo(m));
         log.info("Returning list of handlers: " + list.encodePrettily());
-        m.reply(list);
+        DeliveryOptions dops = new DeliveryOptions();
+        m.headers().forEach((e) -> dops.addHeader(e.getKey(), e.getValue()));
+        m.reply(new JsonObject().put("list", list), dops);
       };
     }
   }
