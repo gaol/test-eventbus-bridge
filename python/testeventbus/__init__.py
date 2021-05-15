@@ -22,7 +22,8 @@ JAR_URL_TEMPLATE = "https://github.com/gaol/test-eventbus-bridge/releases/downlo
 
 __all__ = ['EventBusBridgeStarter', 'CountDownLatch']
 
-_FAT_JARS_ = {'1.0.0': '05cd3e187bf516db4685abb15c9bf983'}
+_FAT_JARS_ = {'1.0.0': '05cd3e187bf516db4685abb15c9bf983',
+              '1.0.1': 'a5c837430e98357c5ee5e533cf22b5e9'}
 
 
 class EventBusBridgeStarter:
