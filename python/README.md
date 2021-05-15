@@ -43,6 +43,4 @@ class EventBusClientTests(unittest.TestCase):
 
 ## TODO
 
-* use a temporary directory to download the jar
-* check MD5 of the jar
 * 

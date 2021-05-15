@@ -7,9 +7,11 @@
 #
 
 from datetime import datetime
+from hashlib import md5
 import os
 import time
 from subprocess import Popen, PIPE
+import tempfile
 from threading import Thread, Condition
 import requests
 
@@ -19,6 +21,8 @@ JAR_URL_TEMPLATE = "https://github.com/gaol/test-eventbus-bridge/releases/downlo
 
 
 __all__ = ['EventBusBridgeStarter', 'CountDownLatch']
+
+_FAT_JARS_ = {'1.0.0': '05cd3e187bf516db4685abb15c9bf983'}
 
 
 class EventBusBridgeStarter:
@@ -42,7 +46,12 @@ class EventBusBridgeStarter:
         self.started = False
         self.debug = debug
         self.conf = conf
-        self.jar_file = "%s/test-ebridge-%s-fat.jar" % (os.getcwd(), jar_version)
+        if jar_version not in _FAT_JARS_:
+            print("%s is not a known version" % jar_version)
+            exit(1)
+        self.jar_version = jar_version
+        temp_dir = tempfile.gettempdir().lower()
+        self.jar_file = "%s/test-ebridge-%s-fat.jar" % (temp_dir, jar_version)
         self.jar_url = JAR_URL_TEMPLATE % (jar_version, jar_version)
         self.failed = False
 
@@ -55,6 +64,11 @@ class EventBusBridgeStarter:
                 with open(self.jar_file, 'wb') as f:
                     f.write(req.content)
                     f.close()
+            with open(self.jar_file, 'rb') as f:
+                jar_md5 = md5(f.read()).hexdigest()
+            if _FAT_JARS_[self.jar_version] != jar_md5:
+                print("%s is not a valid test eventbus bridge jar file" % self.jar_file)
+                exit(1)
             if self.conf is None:
                 self.process = Popen(['java', '-jar', self.jar_file], stderr=PIPE)
             elif type(self.conf) is dict or os.path.exists(self.conf):
