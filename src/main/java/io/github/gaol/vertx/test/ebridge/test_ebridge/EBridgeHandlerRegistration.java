@@ -154,7 +154,7 @@ class EBridgeHandlerRegistration {
         JsonArray list = new JsonArray();
         handlersMap.forEach((k, v) -> list.add(new JsonObject().put("address", k).put("handler", v.toJson())));
         log.info("Got Message from client: \n" + messageInfo(m));
-        log.info("Returning list of handlers: " + list.encodePrettily());
+        log.info("Returning list of handlers: " + list.encode());
         DeliveryOptions dops = new DeliveryOptions();
         m.headers().forEach((e) -> dops.addHeader(e.getKey(), e.getValue()));
         m.reply(new JsonObject().put("list", list), dops);

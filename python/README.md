@@ -9,15 +9,17 @@ Install using pip:
 
 ```python
 import unittest
-from testeventbus import EventBusBridgeStarter
-from vertx.eventbus import EventBus
+from testeventbus import EventBusBridgeStarter, CountDownLatch
+from vertx import EventBus
 
 
 class EventBusClientTests(unittest.TestCase):
     """
     This is the tests against a local test eventbus bridge
     """
-    
+
+    starter = None
+
     def __init__(self, *args, **kwargs):
         super(EventBusClientTests, self).__init__(*args, **kwargs)
     
@@ -35,10 +37,18 @@ class EventBusClientTests(unittest.TestCase):
         cls.starter.stop()
     
     def test_send(self):
-        print("Testing send")
-        ebus = EventBus({"connect": True})
-        ebus.wait()
-        ebus.send("echo", body={"hello": "world"})
+        latch = CountDownLatch()
+        ebus = EventBus()
+        ebus.connect()
+    
+        def handler(message):
+            self.assertEqual(message['body']['hello'], 'world')
+            ebus.close()
+            latch.count_down()
+        ebus.register_handler('echo-back', handler)
+        ebus.send("echo", reply_address="echo-back", body={"hello": "world"})
+        latch.awaits(5)
+
 ```
 
 ## TODO

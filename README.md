@@ -1,8 +1,7 @@
 # test-eventbus-bridge
 A vertx eventbus bridge that is used for testing
 
-This project is created acting as testing eventbus bridge for
-vertx eventbus clients.
+This project is created acting as testing eventbus bridge for vertx eventbus clients.
 
 One of the goal is to make it is easy to start, like using:
 
@@ -22,4 +21,5 @@ Address | Handle
 ------------ | -------------
 `echo` | Handler echos back any message sent to bridge. Body is `JsonObject`
 `time` | Handler sends back current time in the server. Body is `JsonObject`, like:  `{"time": "xxx"}`
-`list` | Handler sends back information about list of registered handlers. Body is `JsonArray`
+`list` | Handler sends back information about list of registered handlers. Body is `JsonObject`: `{"list": [xxx]}`
+

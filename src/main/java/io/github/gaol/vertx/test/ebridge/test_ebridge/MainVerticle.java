@@ -60,7 +60,7 @@ public class MainVerticle extends AbstractVerticle {
       };
       // only register the Handler meta, the real handler has been registered by the bridge
       EBridgeHandlerRegistration.getInstance().register(address, handlerFromClient);
-      log.info("Handler Registered with message: " + rawMessage.encodePrettily());
+      log.info("Handler Registered with message: " + rawMessage.encode());
     } else if (BridgeEventType.UNREGISTER == bridgeEvent.type()) {
       String address = rawMessage.getString("address");
       log.info("Unregister handler with address: " + address);
