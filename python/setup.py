@@ -16,5 +16,7 @@ setuptools.setup(
     license='Apache Software License 2.0',
     description='Starter used to start an EventBus bridge for testing',
     long_description=readme,
-    long_description_content_type='text/markdown'
+    long_description_content_type='text/markdown',
+    install_requires=['requests']
 )
+
