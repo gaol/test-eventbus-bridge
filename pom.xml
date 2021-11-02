@@ -9,7 +9,7 @@
   </parent>
   <groupId>io.github.gaol.vertx.test.ebridge</groupId>
   <artifactId>test-ebridge</artifactId>
-  <version>1.0.3</version>
+  <version>1.0.4-SNAPSHOT</version>
 
   <properties>
 
@@ -24,7 +24,7 @@
     <connection>scm:git:git@github.com:gaol/test-eventbus-bridge.git</connection>
     <developerConnection>scm:git:git@github.com:gaol/test-eventbus-bridge.git</developerConnection>
     <url>https://github.com/gaol/test-eventbus-bridge</url>
-    <tag>1.0.3</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <dependencyManagement>
