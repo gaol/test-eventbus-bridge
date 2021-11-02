@@ -21,14 +21,19 @@ public class MainVerticle extends AbstractVerticle {
 
   @Override
   public void start(Promise<Void> startPromise) throws Exception {
-    log.info("Start deploying MainVerticle using config: " + config().encodePrettily());
     EBridgeHandlerRegistration.getInstance()
       .loadInitialConsumers(config().getJsonArray("handlers"))
       .handlerMap().forEach((address, handler) -> vertx.eventBus().consumer(address, handler.createHandler()));
     final int port = config().getInteger("port", 7000);
-    eventBusBridge = TcpEventBusBridge.create(vertx,
-      new BridgeOptions(config().getJsonObject("bridge-options", new JsonObject())),
-      new NetServerOptions(config().getJsonObject("server-options", new JsonObject())), this::handleBridgeEvent);
+    BridgeOptions bridgeOptions = new BridgeOptions(config().getJsonObject("bridge-options", new JsonObject()));
+    log.info("BridgeOptions: " + bridgeOptions.toJson());
+    JsonObject serverJson = config().getJsonObject("server-options", new JsonObject());
+    String sslStr = serverJson.getString("ssl", "false");
+    serverJson.put("ssl", Boolean.valueOf(sslStr));
+    NetServerOptions serverOptions = new NetServerOptions(serverJson);
+    log.info("NetServerOptions: " + serverOptions.toJson());
+
+    eventBusBridge = TcpEventBusBridge.create(vertx, bridgeOptions, serverOptions, this::handleBridgeEvent);
     eventBusBridge
       .listen(port)
       .onComplete(v -> {
